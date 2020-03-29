@@ -15,17 +15,15 @@ const App = () => {
   ]) 
   const [ newName, setNewName ] = useState('')
   const [ newPhoneNumber, setNewPhoneNumber ] = useState( 0 )
-  const [ filter, setFilter ] = useState('')
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
 
   return (
     <div>
       <h1>Phonebook</h1>
       <SearchFilter 
-        filteredPersons={ filter }
         filteredPersonsSetter={ SetFilteredPersons }
-        filterSetter={ setFilter }
         persons={ persons }
+        filteredPersons={ filteredPersons }
       />
       <AddNew 
         name={ newName }
