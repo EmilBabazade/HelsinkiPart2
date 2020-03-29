@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import AddNew from './addNewPerson'
 import ListAll from './listAllPeople'
+import SearchFilter from './searchFilter'
 
 // TODO: exercise 2.9*: The Phonebook Step4
 
@@ -13,12 +14,19 @@ const App = () => {
     { name: 'Mary Poppendieck', number: '39-23-6423122' }
   ]) 
   const [ newName, setNewName ] = useState('')
-  // TODO: new state for phone number input - done
-  const [ newPhoneNumber, setNewPhoneNumber ] = useState(0)
+  const [ newPhoneNumber, setNewPhoneNumber ] = useState( 0 )
+  const [ filter, setFilter ] = useState('')
+  const [ filteredPersons, SetFilteredPersons ] = useState( persons )
 
   return (
     <div>
       <h1>Phonebook</h1>
+      <SearchFilter 
+        filteredPersons={ filter }
+        filteredPersonsSetter={ SetFilteredPersons }
+        filterSetter={ setFilter }
+        persons={ persons }
+      />
       <AddNew 
         name={ newName }
         nameSetter={ setNewName }
@@ -27,7 +35,7 @@ const App = () => {
         persons={ persons }
         personsSetter={ setPersons }
       />
-      <ListAll persons={ persons } />
+      <ListAll persons={ filteredPersons } />
     </div>
   )
 }
