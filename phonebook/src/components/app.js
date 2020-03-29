@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-
+import AddNew from './addNewPerson'
+import ListAll from './listAllPeople'
 
 // TODO: exercise 2.9*: The Phonebook Step4
 
@@ -82,23 +83,14 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <form>
-        <div>
-          <h2>add a new</h2>
-          name: <input value={ newName } onChange={ handleNameChange } />
-          <br/>
-          number: <input value={ newPhoneNumber } onChange={ handlePhoneNumberChange } />
-        </div>
-        <div>
-          <button type="submit" onClick={ addPerson }>add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      <ul>
-          { persons.map( person => {
-              return <li key={ person.name }>{ person.name } { person.number }</li>
-          } ) }
-      </ul>
+      <AddNew 
+        name={ newName }
+        nameChangeHandler={ handleNameChange }
+        phoneNumber={ newPhoneNumber }
+        phoneNumberChangeHandler={ handlePhoneNumberChange }
+        submitHandler={ addPerson }
+      />
+      <ListAll persons={ persons } />
     </div>
   )
 }
