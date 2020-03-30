@@ -1,21 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AddNew from './addNewPerson'
 import ListAll from './listAllPeople'
 import SearchFilter from './searchFilter'
+import axios from 'axios'
 
 // TODO: exercise 2.9*: The Phonebook Step4
 
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newPhoneNumber, setNewPhoneNumber ] = useState( 0 )
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
+
+  useEffect(() => {
+    axios
+      .get( 'http://127.0.0.1:3002/persons' )
+      .then( response => {
+        setPersons( response.data )
+        SetFilteredPersons( response.data )
+      } )
+  }, [])
 
   return (
     <div>
