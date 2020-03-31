@@ -16,7 +16,7 @@ const App = () => {
         axios
             .get( websites.ALL )
             .then( response => {
-                console.log(response.data)
+                // console.log(response.data) // debug
                 setCountries({
                     countries: [...response.data],
                     filteredCountries: [],
@@ -31,7 +31,10 @@ const App = () => {
                 countries={ countries }
                 countriesSetter={ setCountries }
             />
-            <ListCountries countries={ countries.filteredCountries } />
+            <ListCountries 
+                countries={ countries }
+                countriesSetter={ setCountries }
+            />
         </div>
     )
 }

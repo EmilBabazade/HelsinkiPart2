@@ -1,45 +1,35 @@
 import React from 'react'
-import Country from './country'
+import Country from './countriesList/one'
+import TooManyMatches from './countriesList/tooManyMatches'
+import List from './countriesList/list'
 
-const ListCountries = ( { countries } ) => {
-    let showThis = ( <div> </div> )
-    if( countries.length > 10 ) {
-        showThis = (
-            <div>
-                <p>Too many matches, specify another filter</p>
-            </div>
-        ) 
-    } else if ( countries.length > 1 && countries.length < 10 ) {
-        showThis = (
-            <div>
-                <ul>
-                    { countries.map( country => 
-                        <li key={ country.alpha2Code + country.alpha3Code }>
-                            {country.name}
-                        </li> 
-                    ) }
-                </ul>
-            </div>
-        ) 
-    } else if ( countries.length === 1 ) {
-        let onlyCountry = countries.pop()
-        onlyCountry = {
-            name: onlyCountry.name,
-            capital: onlyCountry.capital,
-            population: onlyCountry.population,
-            languages: onlyCountry.languages,
-            flag: onlyCountry.flag
-        }
-        showThis = (
-            <div>
-                <Country 
-                    country={ onlyCountry }
-                />
-            </div>
-        ) 
+const ListCountries = ( { countries, countriesSetter } ) => {
+    const showCountry = (event) => {
+        event.preventDefault()
+        let country = countries.filteredCountries[+event.target.value]
+        countriesSetter( {
+            countries: [...countries.countries],
+            filteredCountries: [country],
+            isReadyToFilter: true
+        } )
     }
-
-    return showThis
+    if( countries.filteredCountries.length > 10 ) {
+        return (
+            <TooManyMatches />
+        )
+    } else if ( countries.filteredCountries.length > 1 && countries.filteredCountries.length < 10 ) {
+        return(
+            <List countries={ countries.filteredCountries } showButtonHandler={ showCountry } />
+        )
+    } else if ( countries.filteredCountries.length === 1 )   {
+        return (
+            <div>
+                <Country country={ countries.filteredCountries[0] } />
+            </div>
+        );
+    }
+    
+    return null
 }   
 
 export default ListCountries
