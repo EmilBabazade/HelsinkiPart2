@@ -3,6 +3,8 @@ import AddNew from './addNewPerson'
 import ListAll from './listAllPeople'
 import SearchFilter from './searchFilter'
 import personsService from '../services/persons'
+import Notification from './notification'
+import '../index.css'
 
 const App = () => {
   // TODO...?: put these in one object ..?
@@ -11,6 +13,7 @@ const App = () => {
   const [ newPhoneNumber, setNewPhoneNumber ] = useState( 0 )
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
   const [ filter, filterSetter ] = useState( '' )
+  const [ notification, setNotification] = useState('')
 
   const getAllPersons = () => {
     personsService
@@ -71,6 +74,10 @@ const App = () => {
             setNewName( '' )
             setNewPhoneNumber( 0 )
           })
+          .then(() => {
+            setNotification(`Added ${newPerson.name}`)
+            setTimeout(() => {setNotification(null)}, 5000)
+          })
           .catch(error => {
             console.log(`there was an error when creating person: ${error}`)
           })
@@ -120,6 +127,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={notification} />
       <SearchFilter 
         filter={filter}
         filterHandler={filterPersons}
