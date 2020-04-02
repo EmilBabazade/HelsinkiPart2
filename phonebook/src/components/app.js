@@ -2,43 +2,118 @@ import React, { useState, useEffect } from 'react'
 import AddNew from './addNewPerson'
 import ListAll from './listAllPeople'
 import SearchFilter from './searchFilter'
-import axios from 'axios'
-
-// TODO: exercise 2.9*: The Phonebook Step4
-
+import personsService from '../services/persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([]) 
+  // TODO...?: put these in one object ..?
+  const [ persons, setPersons ] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [ newPhoneNumber, setNewPhoneNumber ] = useState( 0 )
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
+  const [ filter, filterSetter ] = useState( '' )
 
   useEffect(() => {
-    axios
-      .get( 'http://127.0.0.1:3002/persons' )
-      .then( response => {
-        setPersons( response.data )
-        SetFilteredPersons( response.data )
-      } )
+    personsService
+      .getAll()
+      .then(initialPersons => {
+        setPersons( initialPersons )
+        SetFilteredPersons( initialPersons )
+      })
   }, [])
 
+  // this is just a helper function
+  const validatePerson = ( newPerson, persons ) => {
+    // check if empty
+    if( newPerson.name && !isNaN( !newPerson.number ) ){
+    // check if name or number already exists
+    var nameIsInPersons = persons.some( person => person.name === newPerson.name );
+    var phonenNumberIsInPersons = persons.some( person => person.number === newPerson.number );
+    if( nameIsInPersons ){
+        throw {
+        phoneBookException: true,
+        userText: `${ newPerson.name } is already in phone book`
+        }
+    } else if( phonenNumberIsInPersons ) {
+        var originalOwner = persons.reduce( ( name, person ) => {
+            if( person.number === newPerson.number ) {
+                return person.name
+            } 
+            return name
+        }, '' )
+            throw {
+            phoneBookException: true,
+            userText: `Number ${ newPerson.number } belongs to ${ originalOwner }`
+        }
+    }
+    // update the states
+    } else {
+        throw {
+            phoneBookException: true,
+            userText: 'None of the fields can be empty!' 
+        } 
+    }
+    
+  }
+
+  const addPerson = ( event ) => {
+    //not submitting anywhere
+    event.preventDefault()
+    let newPerson = { name: newName, number: newPhoneNumber }
+    try {
+        validatePerson( newPerson, persons )
+        personsService
+          .create(newPerson)
+          .then(createdPerson => {
+            setPersons( persons.concat( newPerson ) )
+            setNewName( '' )
+            setNewPhoneNumber( 0 )
+          })
+          .catch(error => {
+            console.log(`there was an error when creating person: ${error}`)
+          })
+    } catch (error) {
+        if( error.phoneBookException ) { // is a custom exception made in this project
+            alert( error.userText )
+        } else { // is an internal exception
+            throw error
+        }
+    }
+  }
+
+  const changePhoneNumber = event => setNewPhoneNumber(event.target.value)
+  const changeName = event => setNewName(event.target.value)
+
+  const filterPersons = (event) => {
+    let newFilter = event.target.value 
+    filterSetter( newFilter )
+    if( newFilter ){
+        let newFilteredPersons = filteredPersons.filter( 
+            person => person
+                .name
+                .toLowerCase()
+                .startsWith( newFilter.toLowerCase() )
+        )
+      SetFilteredPersons( newFilteredPersons )
+    } else {
+      SetFilteredPersons( persons )
+    }
+  }
+  
   return (
     <div>
       <h1>Phonebook</h1>
       <SearchFilter 
-        filteredPersonsSetter={ SetFilteredPersons }
-        persons={ persons }
-        filteredPersons={ filteredPersons }
+        filter={filter}
+        filterHandler={filterPersons}
       />
       <AddNew 
-        name={ newName }
-        nameSetter={ setNewName }
-        phoneNumSetter={ setNewPhoneNumber }
-        phoneNumber={ newPhoneNumber }
-        persons={ persons }
-        personsSetter={ setPersons }
+        addPersonHandler={addPerson}
+        name={newName}
+        nameChangeHandler={changeName}
+        numberChangeHandler={changePhoneNumber}
+        phoneNumber={newPhoneNumber}
       />
-      <ListAll persons={ filteredPersons } />
+      <ListAll persons={Boolean(filter) ? filteredPersons : persons} />
     </div>
   )
 }
