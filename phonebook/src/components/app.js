@@ -12,6 +12,7 @@ const App = () => {
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
   const [ filter, filterSetter ] = useState( '' )
 
+  // get all data from db.json
   useEffect(() => {
     personsService
       .getAll()
