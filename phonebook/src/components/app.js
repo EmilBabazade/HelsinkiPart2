@@ -12,15 +12,17 @@ const App = () => {
   const [ filteredPersons, SetFilteredPersons ] = useState( persons )
   const [ filter, filterSetter ] = useState( '' )
 
-  // get all data from db.json
-  useEffect(() => {
+  const getAllPersons = () => {
     personsService
       .getAll()
       .then(initialPersons => {
         setPersons( initialPersons )
         SetFilteredPersons( initialPersons )
       })
-  }, [])
+  }
+
+  // get all data from db.json
+  useEffect(getAllPersons, [])
 
   // this is just a helper function
   const validatePerson = ( newPerson, persons ) => {
@@ -100,6 +102,21 @@ const App = () => {
     }
   }
   
+  const deletePerson = (person) => {
+    return () => {
+      let okToDelete = window.confirm(`Delete ${person.name} ?`) 
+      if(okToDelete){
+        personsService
+        .exterminate(person.id)
+        .then(getAllPersons)
+        .catch(error => {
+          console.log(`can not delete: ${error}`)
+          alert('You have already deleted that person')
+        })
+      }
+    }
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
@@ -114,7 +131,10 @@ const App = () => {
         numberChangeHandler={changePhoneNumber}
         phoneNumber={newPhoneNumber}
       />
-      <ListAll persons={Boolean(filter) ? filteredPersons : persons} />
+      <ListAll 
+        persons={Boolean(filter) ? filteredPersons : persons} 
+        deleteHandler={deletePerson}  
+      />
     </div>
   )
 }

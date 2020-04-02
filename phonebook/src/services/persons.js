@@ -17,4 +17,9 @@ const update = (id, newPerson) => {
     return getResponseData(axios.put(`${baseUrl}/${id}`, newPerson))
 }
 
-export default {getAll, create, update}
+// delete is a reserved keyword unfortunately
+const exterminate = (id) => {
+    return getResponseData(axios.delete(`${baseUrl}/${id}`))
+}
+
+export default {getAll, create, update, exterminate}
